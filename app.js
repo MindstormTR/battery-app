@@ -429,6 +429,9 @@ function stopCharge() {
     const btnStopChargeHome = document.getElementById('btnStopChargeHome');
     if (btnStopChargeHome) btnStopChargeHome.classList.add('hidden');
     
+    const chargingResultCard = document.getElementById('chargingResultCard');
+    if (chargingResultCard) chargingResultCard.classList.remove('hidden');
+    
     updateHomeStatic();
 }
 
@@ -440,6 +443,9 @@ function startChargingLoop() {
     
     const btnStopChargeHome = document.getElementById('btnStopChargeHome');
     if (btnStopChargeHome) btnStopChargeHome.classList.remove('hidden');
+    
+    const chargingResultCard = document.getElementById('chargingResultCard');
+    if (chargingResultCard) chargingResultCard.classList.add('hidden');
     
     document.querySelector('.battery-container').classList.add('is-charging');
     
