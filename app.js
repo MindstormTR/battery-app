@@ -560,9 +560,9 @@ function initMap() {
     
     mapInstance = L.map('mapView').setView(defaultCoords, 13);
     
-    // Dark mode map tiles
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap',
+    // Light mode / Colorful map tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
         subdomains: 'abcd',
         maxZoom: 20
     }).addTo(mapInstance);
