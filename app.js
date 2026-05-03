@@ -105,6 +105,9 @@ function init() {
     });
 
     document.getElementById('btnStopCharge').addEventListener('click', stopCharge);
+    
+    const btnStopChargeHome = document.getElementById('btnStopChargeHome');
+    if (btnStopChargeHome) btnStopChargeHome.addEventListener('click', stopCharge);
 
     // Parking Form
     document.getElementById('btnSaveParkLocation').addEventListener('click', saveParkingLocation);
@@ -423,6 +426,9 @@ function stopCharge() {
     document.getElementById('activeChargingCard').classList.add('hidden');
     document.getElementById('btnStartChargeHome').classList.remove('hidden');
     
+    const btnStopChargeHome = document.getElementById('btnStopChargeHome');
+    if (btnStopChargeHome) btnStopChargeHome.classList.add('hidden');
+    
     updateHomeStatic();
 }
 
@@ -431,6 +437,9 @@ function startChargingLoop() {
     document.getElementById('btnStopCharge').classList.remove('hidden');
     document.getElementById('btnStartChargeHome').classList.add('hidden');
     document.getElementById('activeChargingCard').classList.remove('hidden');
+    
+    const btnStopChargeHome = document.getElementById('btnStopChargeHome');
+    if (btnStopChargeHome) btnStopChargeHome.classList.remove('hidden');
     
     document.querySelector('.battery-container').classList.add('is-charging');
     
