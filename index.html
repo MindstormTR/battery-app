@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Şarj Takip PWA</title>
+    <link rel="stylesheet" href="style.css?v=3">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Leaflet CSS & JS for Real Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+</head>
+<body>
+
+    <!-- ÜST BİLGİ ALANI -->
+    <header class="app-header" id="appHeader">
+        <div class="vehicle-info">
+            <div class="header-vehicle-wrapper">
+                <select id="headerVehicleSelect" class="header-vehicle-select">
+                    <!-- JS ile doldurulacak -->
+                </select>
+                <i class="ph ph-caret-down select-caret"></i>
+            </div>
+            <p class="vehicle-specs" id="activeVehicleSpecs">44 kWh Batarya</p>
+        </div>
+    </header>
+
+    <!-- SAYFALAR -->
+    <main class="app-content">
+        
+        <!-- 1. ANA SAYFA (HOME) -->
+        <section id="homeScreen" class="screen active">
+            <div class="main-card">
+                <div class="battery-container">
+                    <div class="battery-body">
+                        <!-- Batarya Yüzdesi ve Dalga/Parçacık Efektleri -->
+                        <div class="battery-fill" id="batteryFill" style="height: 42%;"></div>
+                        <i class="ph-fill ph-lightning battery-icon"></i>
+                    </div>
+                    <div class="energy-ring"></div>
+                </div>
+
+                <div class="stats-left">
+                    <span class="stat-label">BATARYA</span>
+                    <h2 class="stat-value highlight" id="homeBatteryPercent">%42</h2>
+                    <span class="stat-label mt-4">Tahmini bitiş</span>
+                    <h3 class="stat-value" id="homeRemainingTime">2s 15dk</h3>
+                    <p class="stat-sub">Saat • Dakika</p>
+                    <div class="status-indicator">
+                        <i class="ph-fill ph-lightning"></i> Şarj oluyor
+                    </div>
+                    <p class="stat-sub" id="homePowerDisplay">AC • 7.4 kW</p>
+                </div>
+
+                <div class="stats-right">
+                    <span class="stat-label">HEDEF</span>
+                    <h3 class="stat-value" id="homeTargetPercent">%80</h3>
+                    <span class="stat-label mt-4">KAZANILACAK MENZİL</span>
+                    <h2 class="stat-value highlight-green" id="homeGainedRange">+128 <small>km</small></h2>
+                </div>
+            </div>
+
+            <button class="primary-btn mt-4" id="btnStartChargeHome">
+                <i class="ph-fill ph-play-circle"></i> Şarjı Başlat
+            </button>
+
+            <!-- Şarj Devam Ediyor Akıllı Kartı (Koşullu Görünecek) -->
+            <div class="smart-card charging-card hidden" id="activeChargingCard">
+                <div class="card-header">
+                    <span class="text-green text-sm uppercase font-bold">Şarj Devam Ediyor</span>
+                </div>
+                <div class="charging-progress-row">
+                    <h2 class="percent-transition"><span id="liveStartPercent">%42</span> <i class="ph ph-arrow-right"></i> <span id="liveTargetPercent">%80</span></h2>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="liveProgressBar" style="width: 50%;"></div>
+                    <i class="ph-fill ph-lightning progress-icon"></i>
+                </div>
+                <div class="charging-footer">
+                    <span><i class="ph ph-clock"></i> <span id="liveRemainingTime">2s 15dk</span> kaldı</span>
+                    <span class="text-green"><b>+<span id="liveGainedKm">128</span> km</b> kazanılıyor</span>
+                </div>
+            </div>
+
+            <!-- Son Park Konumu Kartı -->
+            <div class="row-cards mt-4">
+                <div class="smart-card parking-card">
+                    <span class="text-blue text-sm uppercase font-bold">Son Park Konumu</span>
+                    <div class="park-info mt-2">
+                        <div class="park-icon"><i class="ph-fill ph-map-pin"></i></div>
+                        <div>
+                            <h3 class="park-title" id="lastParkTitle">AVM - B2 Katı</h3>
+                            <p class="park-time" id="lastParkTime">Bugün 14:32</p>
+                        </div>
+                    </div>
+                    <button class="secondary-btn mt-3" id="btnOpenMapHome"><i class="ph ph-navigation-arrow"></i> Navigasyon</button>
+                </div>
+
+                <div class="smart-card settings-card">
+                    <div class="card-header">
+                        <span class="text-purple text-sm uppercase font-bold">Bildirimler</span>
+                    </div>
+                    <ul class="settings-list mt-2">
+                        <li><i class="ph ph-check-circle text-green"></i> Şarj tamamlandığında uyarı</li>
+                        <li><i class="ph ph-check-circle text-green"></i> Süre gerçek zamanlı hesaplanır</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ŞARJ (CHARGING) SAYFASI -->
+        <section id="chargingScreen" class="screen">
+            <h2 class="section-title">Şarj Planlama</h2>
+            
+            <button class="secondary-btn mt-4 hidden" id="btnStopCharge" style="background: rgba(255, 77, 77, 0.1); border-color: rgba(255, 77, 77, 0.3); color: #ff4d4d;">
+                <i class="ph-fill ph-stop-circle"></i> Şarjı Durdur
+            </button>
+
+            <div class="smart-card form-card mt-4">
+                <div class="input-group">
+                    <label>Mevcut Batarya (%)</label>
+                    <div class="input-with-helper">
+                        <input type="number" id="inputCurrentBat" min="0" max="100" placeholder="Örneğin: 42">
+                        <span class="helper-text-inside">Aracınız şu an % kaçta?</span>
+                    </div>
+                </div>
+                <div class="input-group mt-3">
+                    <label>Hedef Batarya (%)</label>
+                    <div class="input-with-helper">
+                        <input type="number" id="inputTargetBat" min="0" max="100" placeholder="Örneğin: 80">
+                        <span class="helper-text-inside">% kaça kadar doldurmak istiyorsunuz?</span>
+                    </div>
+                </div>
+                <div class="input-group mt-3">
+                    <label>Şarj Gücü (kW)</label>
+                    <div class="input-with-helper">
+                        <input type="number" id="inputPowerKw" min="1" max="350" placeholder="Örneğin: 7.2">
+                        <span class="helper-text-inside">Aracınızın ekranında yazan anlık gücü giriniz</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="smart-card result-card mt-4">
+                <div class="result-row">
+                    <span>Tahmini Süre:</span>
+                    <strong id="calcTimeResult">--</strong>
+                </div>
+                <div class="result-row mt-2">
+                    <span>Kazanılacak Menzil:</span>
+                    <strong class="text-green" id="calcRangeResult">+0 km</strong>
+                </div>
+            </div>
+
+            <div class="consent-wrapper mt-4">
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="checkSimulationConsent">
+                    <span class="checkmark"></span>
+                    <span class="consent-text">Bu uygulamanın aracıma veya istasyona bağlanmadığını, yalnızca girdiğim verilere göre <strong>tahmini takip ve bildirim</strong> amacıyla çalıştığını anlıyorum.</span>
+                </label>
+            </div>
+
+            <button class="primary-btn mt-4" id="btnStartChargeFromForm">
+                <i class="ph-fill ph-play-circle"></i> Şarjı Başlat
+            </button>
+        </section>
+
+        <!-- 3. PARK (PARKING) SAYFASI -->
+        <section id="parkingScreen" class="screen">
+            <h2 class="section-title">Park Konumu</h2>
+            <div class="map-placeholder mt-4">
+                <div id="mapView" class="map-view"></div>
+            </div>
+            <div class="smart-card mt-4">
+                <div class="input-group">
+                    <label>Konum Notu</label>
+                    <input type="text" id="inputParkNote" placeholder="Örn: B2 kat C12">
+                </div>
+                <div class="btn-group mt-3">
+                    <button class="primary-btn w-50" id="btnSaveParkLocation"><i class="ph ph-floppy-disk"></i> Kaydet</button>
+                    <button class="secondary-btn w-50" id="btnNavigateToPark"><i class="ph ph-navigation-arrow"></i> Navigasyona Git</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ARAÇLAR (VEHICLES) SAYFASI -->
+        <section id="vehiclesScreen" class="screen">
+            <h2 class="section-title">Araçlarım</h2>
+            <div class="vehicles-list mt-4" id="vehiclesListContainer">
+                <!-- Araçlar dinamik olarak buraya eklenecek -->
+            </div>
+            <button class="secondary-btn mt-4" id="btnAddVehicle">
+                <i class="ph ph-plus"></i> Yeni Araç Ekle
+            </button>
+            
+            <div class="smart-card mt-4 hidden" id="addVehicleForm">
+                <h3 class="text-sm uppercase font-bold mb-3">Araç Ekle</h3>
+                
+                <div class="input-group">
+                    <label>Araç Seçiniz</label>
+                    <select id="presetVehicleSelect" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: var(--border-radius-sm); color: white; font-size: 1rem;">
+                        <option value="">-- Listeden Seçin --</option>
+                        <!-- JS ile doldurulacak -->
+                        <option value="custom">Listede Yok (Manuel Ekle)</option>
+                    </select>
+                </div>
+
+                <div id="customVehicleFields" class="hidden">
+                    <div class="input-group mt-3">
+                        <label>Araç Adı</label>
+                        <input type="text" id="newVehName" placeholder="Örn: Tesla Model 3">
+                    </div>
+                    <div class="input-group mt-3">
+                        <label>Batarya Kapasitesi (kWh)</label>
+                        <input type="number" id="newVehCap" placeholder="Örn: 60">
+                    </div>
+                </div>
+
+                <div class="btn-group mt-4">
+                    <button class="primary-btn" id="btnSaveNewVehicle">Kaydet</button>
+                    <button class="secondary-btn" id="btnCancelNewVehicle">İptal</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ALT NAVİGASYON (BOTTOM NAVIGATION) -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-target="homeScreen">
+            <i class="ph ph-house ph-fill"></i>
+            <span>Ana Sayfa</span>
+        </a>
+        <a href="#" class="nav-item" data-target="chargingScreen">
+            <i class="ph ph-lightning"></i>
+            <span>Şarj</span>
+        </a>
+        <a href="#" class="nav-item" data-target="parkingScreen">
+            <i class="ph ph-map-pin"></i>
+            <span>Park</span>
+        </a>
+        <a href="#" class="nav-item" data-target="vehiclesScreen">
+            <i class="ph ph-car"></i>
+            <span>Araçlar</span>
+        </a>
+    </nav>
+
+    <!-- Hata ve Bilgi Mesajları (Toast) -->
+    <div id="toast" class="toast">Mesaj</div>
+
+    <script src="app.js"></script>
+</body>
+</html>
