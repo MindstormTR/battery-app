@@ -512,11 +512,11 @@ function updateChargingState() {
 function updateHomeStatic() {
     const v = getActiveVehicle();
     // Dummy static values for when not charging
-    document.getElementById('homeBatteryPercent').innerText = `%42`;
-    document.getElementById('batteryFill').style.height = `42%`;
+    document.getElementById('homeBatteryPercent').innerText = `%--`;
+    document.getElementById('batteryFill').style.height = `0%`;
     document.getElementById('homeRemainingTime').innerText = `--`;
-    document.getElementById('homeTargetPercent').innerText = `%80`;
-    document.getElementById('homeGainedRange').innerHTML = `+0 <small>km</small>`;
+    document.getElementById('homeTargetPercent').innerText = `%--`;
+    document.getElementById('homeGainedRange').innerHTML = `-- <small>km</small>`;
     document.getElementById('homePowerDisplay').innerText = `-- kW`;
     
     // Status Indicator
