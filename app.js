@@ -114,6 +114,14 @@ function init() {
     document.getElementById('btnNavigateToPark').addEventListener('click', navigateToPark);
     document.getElementById('btnOpenMapHome').addEventListener('click', navigateToPark);
     
+    // Modal Listeners
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    if (btnCloseModal) {
+        btnCloseModal.addEventListener('click', () => {
+            document.getElementById('chargeCompleteModal').classList.add('hidden');
+        });
+    }
+    
     // Load simulation consent
     if (localStorage.getItem('simulationConsent') === 'true') {
         document.getElementById('checkSimulationConsent').checked = true;
@@ -473,6 +481,11 @@ function updateChargingState() {
     if (currentPercent >= chargingSession.targetPercent) {
         currentPercent = chargingSession.targetPercent;
         stopCharge();
+        
+        // Show Modal
+        const completeModal = document.getElementById('chargeCompleteModal');
+        if (completeModal) completeModal.classList.remove('hidden');
+        
         showToast("Şarj tamamlandı!");
         if (Notification.permission === 'granted') {
             new Notification('Şarj Tamamlandı', { body: 'Aracınız hedeflenen şarj seviyesine ulaştı.' });
