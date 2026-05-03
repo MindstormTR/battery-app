@@ -575,7 +575,13 @@ function initMap() {
             const coords = [pos.coords.latitude, pos.coords.longitude];
             mapInstance.setView(coords, 15);
             markerInstance.setLatLng(coords);
-        }, () => {});
+        }, (err) => {
+            console.warn("Konum alınamadı:", err.message);
+        }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
     }
 }
 
