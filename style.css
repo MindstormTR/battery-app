@@ -338,14 +338,19 @@ h1, h2, h3 { font-weight: 600; }
 .status-indicator {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.8rem;
-    color: var(--neon-green);
+    gap: 5px;
     background: rgba(0, 255, 102, 0.1);
-    padding: 4px 10px;
-    border-radius: 12px;
-    margin-top: 1rem;
-    margin-bottom: 4px;
+    color: var(--neon-green);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.status-indicator.offline {
+    background: rgba(255, 77, 77, 0.1);
+    color: #ff4d4d;
 }
 
 /* Buttons */

@@ -491,6 +491,13 @@ function updateChargingState() {
     const powerType = chargingSession.power <= 22 ? 'AC' : 'DC';
     document.getElementById('homePowerDisplay').innerText = `${powerType} • ${chargingSession.power} kW`;
     
+    // Status Indicator
+    const indicator = document.getElementById('homeStatusIndicator');
+    if(indicator) {
+        indicator.classList.remove('offline');
+        indicator.innerHTML = '<i class="ph-fill ph-lightning"></i> Şarj Oluyor';
+    }
+    
     // Update Smart Card
     document.getElementById('liveStartPercent').innerText = `%${Math.floor(currentPercent)}`;
     document.getElementById('liveTargetPercent').innerText = `%${chargingSession.targetPercent}`;
@@ -511,6 +518,13 @@ function updateHomeStatic() {
     document.getElementById('homeTargetPercent').innerText = `%80`;
     document.getElementById('homeGainedRange').innerHTML = `+0 <small>km</small>`;
     document.getElementById('homePowerDisplay').innerText = `-- kW`;
+    
+    // Status Indicator
+    const indicator = document.getElementById('homeStatusIndicator');
+    if(indicator) {
+        indicator.classList.add('offline');
+        indicator.innerHTML = '<i class="ph-fill ph-lightning"></i> Şarj Bekleniyor';
+    }
     
     document.querySelector('.battery-container').classList.remove('is-charging');
     
