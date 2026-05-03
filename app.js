@@ -1,6 +1,7 @@
 // app.js
 
 // --- Predefined EV Database ---
+const APP_PIN = "1923"; // Varsayılan Giriş Şifresi
 const evDatabase = [
     { id: 'ev1', name: 'Togg T10X V2 (Uzun Menzil)', capacity: 88.5, efficiency: 5.9 },
     { id: 'ev2', name: 'Togg T10X V1 (Standart Menzil)', capacity: 52.4, efficiency: 6.0 },
@@ -30,9 +31,14 @@ let parkingData = JSON.parse(localStorage.getItem('parkingData')) || null;
 const screens = document.querySelectorAll('.screen');
 const navItems = document.querySelectorAll('.nav-item');
 const toastEl = document.getElementById('toast');
+const btnLogin = document.getElementById('btnLogin');
+const loginPin = document.getElementById('loginPin');
+const loginError = document.getElementById('loginError');
 
 // --- Initialization ---
 function init() {
+    if (!checkAuth()) return; // Şifre girilmediyse ekranı yükleme
+    
     setupNavigation();
     populateVehicleSelect();
     renderVehicles();
@@ -108,6 +114,51 @@ function init() {
     // Load simulation consent
     if (localStorage.getItem('simulationConsent') === 'true') {
         document.getElementById('checkSimulationConsent').checked = true;
+    }
+}
+
+// --- AUTHENTICATION ---
+function checkAuth() {
+    const savedPin = localStorage.getItem('app_auth_pin');
+    if (savedPin === APP_PIN) {
+        // Zaten giriş yapılmış
+        document.getElementById('homeScreen').classList.add('active');
+        if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.remove('active');
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.getElementById('appHeader').style.display = 'flex';
+        return true;
+    } else {
+        // Giriş Yapılmamış
+        if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('active');
+        document.getElementById('homeScreen').classList.remove('active');
+        document.getElementById('bottomNav').classList.add('hidden');
+        document.getElementById('appHeader').style.display = 'none';
+        
+        btnLogin.addEventListener('click', handleLogin);
+        loginPin.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+        return false;
+    }
+}
+
+function handleLogin() {
+    const pin = loginPin.value.trim();
+    if (pin === APP_PIN) {
+        localStorage.setItem('app_auth_pin', pin);
+        loginError.classList.add('hidden');
+        
+        // Ekranları değiştirip init'i başlat
+        document.getElementById('authScreen').classList.remove('active');
+        document.getElementById('homeScreen').classList.add('active');
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.getElementById('appHeader').style.display = 'flex';
+        
+        init(); // Uygulamayı başlat
+        showToast("Giriş başarılı!");
+    } else {
+        loginError.classList.remove('hidden');
+        loginPin.value = '';
     }
 }
 

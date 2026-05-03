@@ -641,6 +641,10 @@ h1, h2, h3 { font-weight: 600; }
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+.bottom-nav.hidden {
+    display: none !important;
+}
+
 .nav-item {
     display: flex;
     flex-direction: column;

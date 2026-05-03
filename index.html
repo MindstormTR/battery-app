@@ -27,9 +27,26 @@
 
     <!-- SAYFALAR -->
     <main class="app-content">
+
+        <!-- GÜVENLİK (GİRİŞ) EKRANI -->
+        <section id="authScreen" class="screen active">
+            <div class="auth-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh;">
+                <div class="mb-4" style="color: var(--neon-green); font-size: 4rem;">
+                    <i class="ph ph-lock-key"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2">Güvenlik Doğrulaması</h2>
+                <p class="text-sm text-center mb-6" style="color: var(--text-muted);">Sisteme erişmek için giriş anahtarını girin.</p>
+                
+                <div class="input-group" style="width: 100%; max-width: 300px;">
+                    <input type="password" id="loginPin" placeholder="Giriş Şifresi" style="text-align: center; letter-spacing: 3px; font-size: 1.2rem; background: rgba(0,0,0,0.5);">
+                </div>
+                <button class="primary-btn mt-4" id="btnLogin" style="width: 100%; max-width: 300px;">Giriş Yap</button>
+                <p id="loginError" class="mt-3 text-sm hidden" style="color: #ff4444; font-weight: bold;">Hatalı şifre!</p>
+            </div>
+        </section>
         
         <!-- 1. ANA SAYFA (HOME) -->
-        <section id="homeScreen" class="screen active">
+        <section id="homeScreen" class="screen">
             <div class="main-card">
                 <div class="battery-container">
                     <div class="battery-body">
@@ -230,7 +247,7 @@
     </main>
 
     <!-- ALT NAVİGASYON (BOTTOM NAVIGATION) -->
-    <nav class="bottom-nav">
+    <nav class="bottom-nav hidden" id="bottomNav">
         <a href="#" class="nav-item active" data-target="homeScreen">
             <i class="ph ph-house ph-fill"></i>
             <span>Ana Sayfa</span>
