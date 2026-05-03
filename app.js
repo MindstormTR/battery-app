@@ -548,5 +548,14 @@ if ("Notification" in window && Notification.permission !== "granted" && Notific
     Notification.requestPermission();
 }
 
+// Service Worker Registration for PWA & Offline Support
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(reg => console.log('Service Worker Registered!'))
+            .catch(err => console.error('Service Worker Registration Failed!', err));
+    });
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', init);

@@ -1,0 +1,17 @@
+{
+  "name": "Şarj Takip PWA",
+  "short_name": "Şarj",
+  "description": "Elektrikli araçlar için akıllı şarj takip ve bildirim uygulaması.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070B14",
+  "theme_color": "#00FF66",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
