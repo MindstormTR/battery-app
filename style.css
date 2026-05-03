@@ -694,6 +694,27 @@ h1, h2, h3 { font-weight: 600; }
     opacity: 1;
 }
 
+/* Developer Credit */
+.developer-credit {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-bottom: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.developer-credit a {
+    color: var(--neon-green);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.developer-credit a:hover {
+    color: white;
+    text-shadow: 0 0 5px var(--neon-green-glow);
+}
+
 /* Media Queries for Mobile Devices */
 @media (max-width: 480px) {
     .app-content { padding: 0 1rem; }
